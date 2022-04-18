@@ -9,23 +9,25 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    lazy var game = ConcentrationGame(numberOfPairsOfCards: (buttonCollection.count + 1) / 2)
-
-    var touches = 0 {
+    private lazy var game = ConcentrationGame(numberOfPairsOfCards: numberOfPairsOfCards)
+    
+    var numberOfPairsOfCards: Int {
+        return (buttonCollection.count + 1) / 2
+    }
+    private(set) var touches = 0 {
         didSet{
-        touchLabel.text = "Ходов сделано: \(touches)"
+            touchLabel.text = "Ходов сделано: \(touches)"
         }
     }
     
-
-    var emojiCollection = ["👹", "🐤", "❤️", "👺", "💩", "👾", "🤖", "👻", "☠️", "💀", "👽", "🤡", "🐝", "🐢", "🦖", "🐙", "🦋", "🦟", "🙈", "🙉", "🐒", "🐞", "🦐", "🦑", "🦧", "🦛",]
     
-    var emojiDictionary = [Int:String]()
+    private var emojiCollection = ["👹", "🐤", "❤️", "👺", "💩", "👾", "🤖", "👻", "☠️", "💀", "👽", "🤡", "🐝", "🐢", "🦖", "🐙", "🦋", "🦟", "🙈", "🙉", "🐒", "🐞", "🦐", "🦑", "🦧", "🦛",]
     
-    func emojiIdentifier(for card: Card) -> String {
+    private var emojiDictionary = [Int:String]()
+    
+    private func emojiIdentifier(for card: Card) -> String {
         if emojiDictionary[card.identifier] == nil {
-            let randomIndex = Int(arc4random_uniform(UInt32(emojiCollection.count)))
-            emojiDictionary[card.identifier] = emojiCollection.remove(at: randomIndex)
+            emojiDictionary[card.identifier] = emojiCollection.remove(at: emojiCollection.count.arc4randomExtension)
         }
         return emojiDictionary[card.identifier] ?? "?"
     }
@@ -44,10 +46,10 @@ class ViewController: UIViewController {
         }
     }
     
-    @IBOutlet weak var touchLabel: UILabel!
-    @IBOutlet var buttonCollection: [UIButton]!
+    @IBOutlet private weak var touchLabel: UILabel!
+    @IBOutlet private var buttonCollection: [UIButton]!
     
-    @IBAction func buttonAction(_ sender: UIButton) {
+    @IBAction private func buttonAction(_ sender: UIButton) {
         touches += 1
         if let buttonIndex = buttonCollection.firstIndex(of: sender) {
             game.chooseCard(at: buttonIndex)
@@ -56,3 +58,14 @@ class ViewController: UIViewController {
     }
 }
 
+extension Int {
+    var arc4randomExtension: Int {
+        if self > 0 {
+            return Int(arc4random_uniform(UInt32(self)))
+        } else if self < 0 {
+            return -Int(arc4random_uniform(UInt32(abs(self))))
+        } else {
+            return 0
+        }
+    }
+}
